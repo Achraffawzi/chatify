@@ -4,3 +4,21 @@
 .home_pseudo {
     color: white;
 }
+
+.home_profil {
+    display: flex;
+    padding: 40px;
+
+    .home_image {
+        margin-right: 20px;
+    }
+
+    .home_pseudo_a {
+        margin-top: 10px;
+    }
+
+    .home_a_profil {
+        text-decoration: none;
+    }
+
+}

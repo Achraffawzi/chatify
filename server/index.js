@@ -18,19 +18,33 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 const { handleApiError } = require("./middlewares/errorHandler");
 
-// let onlineUsers = {};
+let onlineUsers = [];
 
-// io.on("connection", (socket) => {
-//   console.log("new user connected! " + socket.id);
+const addUser = (userID, socketID) => {
+  const userAlreadyExist = onlineUsers.find((user) => user.userID === userID);
 
-//   socket.on("newUser", (userID) => {
-//     // Add user to onlineUsers obj
-//     onlineUsers[socket.id] = userID;
+  if (userAlreadyExist) return false;
+  onlineUsers.push({ userID, socketID });
+  return true;
+};
 
-//     // emit onlineUsers to clients(his/her friends)
-//     io.emit("onlineUsers", onlineUsers);
-//   });
-// });
+io.on("connection", (socket) => {
+  console.log("new user connected! " + socket.id);
+
+  // Add connected user to online users array
+  socket.on("newUser", (userID) => {
+    const userAdded = addUser(userID, socket.id);
+    io.emit("getOnlineUsers", onlineUsers);
+  });
+
+  // socket.on("newUser", (userID) => {
+  //   // Add user to onlineUsers obj
+  //   onlineUsers[socket.id] = userID;
+
+  //   // emit onlineUsers to clients(his/her friends)
+  //   io.emit("onlineUsers", onlineUsers);
+  // });
+});
 
 // Middlewares
 app.use(

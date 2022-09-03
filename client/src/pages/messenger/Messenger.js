@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from 'react';
 import {
   AppShell,
   Avatar,
@@ -12,8 +13,8 @@ import {
   TextInput,
   useMantineTheme,
 } from '@mantine/core';
+import { io } from 'socket.io-client';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUser, cancelFriendRequest } from '../../redux/userSlice';
 import NoChatSelected from '../../assets/images/noChatSelected.svg';
@@ -150,6 +151,30 @@ export default function Messenger() {
     );
   };
 
+  /**
+   * ========== working with socket =============
+   */
+  const socket = useRef();
+  const [onlineFriends, setOnlineFriends] = useState([]);
+  // when client first connects
+  useEffect(() => {
+    socket.current = io(process.env.REACT_APP_SERVER_URI);
+  }, []);
+
+  /**
+   * get users that are friends with current user
+   */
+  const getFriendsFromUsers = (users) =>
+    friends.filter((friend) => users.some((u) => u.userID === friend));
+
+  // add user to online users when connected
+  useEffect(() => {
+    socket.current.emit('newUser', _id);
+    socket.current.on('getOnlineUsers', (users) => {
+      setOnlineFriends(getFriendsFromUsers(users));
+    });
+  }, [_id]);
+
   return (
     <AppShell
       styles={{
@@ -244,11 +269,11 @@ export default function Messenger() {
             <div className={classes.onlineFriendsWrapper}>
               <Text style={{ marginBottom: '15px' }}>Online friends</Text>
               <div className={classes.onlineFriends}>
-                {new Array(4).fill(0).map((_, index) => (
+                {onlineFriends.map((onlineFriend) => (
                   <OnlineFriend
-                    key={index}
-                    picture="https://images.unsplash.com/photo-1657299170222-1c67dc056b70?ixlib=rb-1.2.1&ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60"
-                    username="Alpha"
+                    key={onlineFriend}
+                    onlineFriend={onlineFriend}
+                    setSelectedChat={setSelectedChat}
                   />
                 ))}
               </div>

@@ -6,6 +6,7 @@ const namespace = 'user';
 export const signin = createAsyncThunk(`${namespace}/signin`, async (user, { rejectWithValue }) => {
   try {
     const { data } = await axiosInstance.post('/api/auth/login', user);
+    console.log(data);
     return data;
   } catch (error) {
     return typeof error.response.data === 'object'
@@ -31,6 +32,10 @@ const userSlice = createSlice({
       // eslint-disable-next-line no-param-reassign
       state.user = { ...state.user, reqSent };
     },
+    logout: (state) => {
+      // eslint-disable-next-line no-param-reassign
+      state.user = null;
+    },
   },
   extraReducers: {
     [signin.fulfilled]: (state, { payload }) => {
@@ -40,5 +45,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { updateUser, cancelFriendRequest } = userSlice.actions;
+export const { updateUser, cancelFriendRequest, logout } = userSlice.actions;
 export default userSlice.reducer;

@@ -28,6 +28,10 @@ const addUser = (userID, socketID) => {
   return true;
 };
 
+const getUser = (userID) => {
+  return onlineUsers.find((user) => user.userID === userID);
+};
+
 io.on("connection", (socket) => {
   console.log("new user connected! " + socket.id);
 
@@ -37,13 +41,20 @@ io.on("connection", (socket) => {
     io.emit("getOnlineUsers", onlineUsers);
   });
 
-  // socket.on("newUser", (userID) => {
-  //   // Add user to onlineUsers obj
-  //   onlineUsers[socket.id] = userID;
+  // new message
+  socket.on("newMessage", ({ from, to, text }) => {
+    console.log(to, from, text);
+    const user = getUser(to);
+    console.log(user);
+    if (user) {
+      io.to(user.socketID).emit("getMessage", {
+        from,
+        text,
+      });
+    }
+  });
 
-  //   // emit onlineUsers to clients(his/her friends)
-  //   io.emit("onlineUsers", onlineUsers);
-  // });
+  // remove user once disconnected
 });
 
 // Middlewares

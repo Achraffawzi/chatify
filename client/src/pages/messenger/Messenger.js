@@ -14,6 +14,7 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import { io } from 'socket.io-client';
+import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUser, cancelFriendRequest } from '../../redux/userSlice';
@@ -26,20 +27,28 @@ import { AppHeader, Profile, Chat, OnlineFriend, SideChats } from '../../compone
 
 export default function Messenger() {
   /**
-   * Mantine states
-   */
-  const { classes } = useStyles();
-  const theme = useMantineTheme();
-  const [opened, setOpened] = useState(false);
-  const [drawerOpened, setDrawerOpened] = useState(false);
-
-  /**
    * Redux store states
    */
   const { _id, username, picture, friends, reqSent, reqRecieved } = useSelector(
     (store) => store.user.user
   );
   const dispatch = useDispatch();
+
+  /**
+   * check if user is logged in
+   * LOGGED IN => render the page
+   * NOT LOGGED IN => redirect to login page
+   */
+  const navigate = useNavigate();
+  if (_id === undefined) navigate('/auth/signin');
+
+  /**
+   * Mantine states
+   */
+  const { classes } = useStyles();
+  const theme = useMantineTheme();
+  const [opened, setOpened] = useState(false);
+  const [drawerOpened, setDrawerOpened] = useState(false);
 
   /**
    * Component core states
@@ -300,7 +309,7 @@ export default function Messenger() {
             </Text>
           </div>
         ) : (
-          <Chat chat={selectedChat} />
+          <Chat chat={selectedChat} socket={socket.current} />
         )}
       </div>
     </AppShell>

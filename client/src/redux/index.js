@@ -1,4 +1,4 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import {
   persistStore,
   persistReducer,
@@ -18,9 +18,9 @@ const persistConfig = {
   storage,
 };
 
-const rootReducers = combineReducers({ user: userReducer });
+// const rootReducers = combineReducers({ user: userReducer });
 
-const persistedReducer = persistReducer(persistConfig, rootReducers);
+const persistedReducer = persistReducer(persistConfig, userReducer);
 
 const store = configureStore({
   reducer: persistedReducer,

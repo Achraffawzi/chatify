@@ -19,6 +19,7 @@ export const SideChats = ({ setSelectedChat }) => {
     return data;
   };
   const { data, isLoading } = useQuery(['chatsByUserId', _id], () => getChatsByUser(_id));
+
   return (
     <>
       <Text style={{ marginBottom: '15px' }}>Conversations</Text>

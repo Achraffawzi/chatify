@@ -15,7 +15,7 @@ import * as yup from 'yup';
 
 import { useDispatch } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { signin } from '../../redux/userSlice';
 
 const validationSchema = yup.object().shape({
@@ -32,6 +32,15 @@ function SignIn() {
     resolver: yupResolver(validationSchema),
   });
 
+  /**
+   * check if user is logged in => redirect to /messenger
+   */
+  useEffect(() => {
+    if (localStorage.getItem('jwt')) {
+      navigate('/messenger');
+    }
+  }, []);
+
   const {
     register,
     handleSubmit,
@@ -43,7 +52,7 @@ function SignIn() {
       .then(unwrapResult)
       .then((res) => {
         // store token in LS
-        if (localStorage.getItem('jwt')) localStorage.removeItem('jwt');
+        // if (localStorage.getItem('jwt')) localStorage.removeItem('jwt');
         localStorage.setItem('jwt', res.accessToken);
         navigate('/messenger');
       })

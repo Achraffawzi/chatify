@@ -12,6 +12,7 @@ import {
   Confirmation,
 } from './pages/auth';
 import Messenger from './pages/messenger/Messenger';
+import { NotFound } from './pages/redirects';
 import { DEFAULT_THEME, MyGlobalStyle } from './theme';
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ function App() {
                 <Route path="reset-password" element={<ResetPassword />} />
               </Route>
               <Route path="/messenger" element={<Messenger />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </Router>
         </MantineProvider>

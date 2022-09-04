@@ -126,7 +126,9 @@ const redirect = async (req, res, next) => {
 
 const logout = (req, res, next) => {
   try {
-    req.logout();
+    req.logout((err) => {
+      if (err) next(err);
+    });
     res.send("You are logged out");
   } catch (error) {
     next(error);

@@ -9,7 +9,7 @@ export const SideChat = ({ conversation, currentUserID }) => {
   const { classes } = useStyles();
   const { createdAt, lastMessage, users } = conversation;
 
-  const userID = users.find((item) => item._id !== currentUserID);
+  const userID = users.find((item) => item !== currentUserID);
 
   const getUserById = async (userId) => {
     const { data } = await axiosInstance.get(`/api/users?userID=${userId}`);

@@ -11,14 +11,16 @@ export const SideChats = ({ setSelectedChat }) => {
   /**
    * Redux store states
    */
-  const { _id } = useSelector((store) => store.user.user);
+  const userGlobalData = useSelector((store) => store.user);
 
   // Fetching all chats of current user
   const getChatsByUser = async (userID) => {
     const { data } = await axiosInstance.get(`/api/chats/${userID}`);
     return data;
   };
-  const { data, isLoading } = useQuery(['chatsByUserId', _id], () => getChatsByUser(_id));
+  const { data, isLoading } = useQuery(['chatsByUserId', userGlobalData?._id], () =>
+    getChatsByUser(userGlobalData?._id)
+  );
 
   return (
     <>
@@ -29,7 +31,7 @@ export const SideChats = ({ setSelectedChat }) => {
         <div>
           {data?.map((item) => (
             <div aria-hidden="true" onClick={() => setSelectedChat(item)} key={item._id}>
-              <SideChat conversation={item} currentUserID={_id} />
+              <SideChat conversation={item} currentUserID={userGlobalData?._id} />
             </div>
           ))}
         </div>

@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../axios';
+import { decodeJWT } from '../utils/decodeJWT';
 
 const namespace = 'user';
 
 export const signin = createAsyncThunk(`${namespace}/signin`, async (user, { rejectWithValue }) => {
   try {
     const { data } = await axiosInstance.post('/api/auth/login', user);
-    console.log(data);
     return data;
   } catch (error) {
     return typeof error.response.data === 'object'
@@ -16,7 +16,7 @@ export const signin = createAsyncThunk(`${namespace}/signin`, async (user, { rej
 });
 
 const initialState = {
-  user: null,
+  user: JSON.parse(localStorage.getItem('user')) || null,
 };
 
 const userSlice = createSlice({
@@ -39,8 +39,9 @@ const userSlice = createSlice({
   },
   extraReducers: {
     [signin.fulfilled]: (state, { payload }) => {
+      const { accessToken, refreshToken, ...others } = payload;
       // eslint-disable-next-line no-param-reassign
-      state.user = payload;
+      state.user = others;
     },
   },
 });

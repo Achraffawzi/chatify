@@ -7,7 +7,7 @@ import axiosInstance from '../../axios';
 import { logout } from '../../redux/userSlice';
 
 export const Profile = () => {
-  const { username, email, picture } = useSelector((store) => store.user.user);
+  const userGlobalData = useSelector((store) => store.user);
   const { classes } = useStyles();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -21,10 +21,10 @@ export const Profile = () => {
 
   return (
     <div className={classes.profile}>
-      <Avatar src={picture.pictureURL} size="250px" className={classes.avatar} />
+      <Avatar src={userGlobalData?.picture.pictureURL} size="250px" className={classes.avatar} />
       <Text className={classes.usernameEmail}>
-        {username}
-        <Text>{email}</Text>
+        {userGlobalData?.username}
+        <Text>{userGlobalData?.email}</Text>
       </Text>
       <Text className={classes.logoutButton} onClick={handleLogout}>
         Logout

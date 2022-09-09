@@ -14,7 +14,7 @@ import {
   useMantineTheme,
 } from '@mantine/core';
 import { io } from 'socket.io-client';
-import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUser, cancelFriendRequest } from '../../redux/userSlice';
@@ -27,11 +27,17 @@ import { AppHeader, Profile, Chat, OnlineFriend, SideChats } from '../../compone
 
 export default function Messenger() {
   /**
+   * check if user is not logged in => show unauthorized page
+   */
+  // const navigate = useNavigate();
+
+  if (localStorage.getItem('jwt') == null) return <Navigate to="/unauthorized" />;
+
+  /**
    * Redux store states
    */
-  const { _id, username, picture, friends, reqSent, reqRecieved } = useSelector(
-    (store) => store.user.user
-  );
+  const userGlobalData = useSelector((store) => store.user);
+
   const dispatch = useDispatch();
 
   /**
@@ -39,8 +45,8 @@ export default function Messenger() {
    * LOGGED IN => render the page
    * NOT LOGGED IN => redirect to login page
    */
-  const navigate = useNavigate();
-  if (_id === undefined) navigate('/auth/signin');
+  // const navigate = useNavigate();
+  // if (_id === undefined) navigate('/auth/signin');
 
   /**
    * Mantine states
@@ -68,14 +74,18 @@ export default function Messenger() {
   /**
    * fetching user based on username state
    */
-  const getUserByUsername = async (searchedUserName) => {
-    const { data } = await axiosInstance.get(`/api/users?username=${searchedUserName}`);
+  const controller = new AbortController();
+  const getUserByUsername = async (searchedUserName, signal) => {
+    controller.abort();
+    const { data } = await axiosInstance.get(`/api/users?username=${searchedUserName}`, {
+      signal,
+    });
     return data;
   };
 
   const { data: searchedUser, isLoading } = useQuery(
     ['user', searchedUsername],
-    () => getUserByUsername(searchedUsername),
+    ({ signal }) => getUserByUsername(searchedUsername, signal),
     {
       enabled: searchedUsername !== '',
     }
@@ -87,7 +97,7 @@ export default function Messenger() {
   const mutation = useMutation((payload) => axiosInstance.post('/api/users/sendRequest', payload));
   const handleAddFriend = () => {
     mutation.mutate(
-      { from: _id, to: searchedUser._id },
+      { from: userGlobalData?._id, to: searchedUser._id },
       {
         onSuccess: ({ data }) => {
           console.log(data?.message);
@@ -106,7 +116,7 @@ export default function Messenger() {
   );
   const handleCancelFriendRequest = () => {
     mutation_cancelFriendRequest.mutate(
-      { from: _id, to: searchedUser._id },
+      { from: userGlobalData?._id, to: searchedUser._id },
       {
         onSuccess: () => {
           //  console.log(data?.message);
@@ -122,8 +132,8 @@ export default function Messenger() {
    * (friend, reqSent, reqRecieved, stranger)
    */
   const getRelationship = (user) => {
-    if (user?._id === _id) return <></>;
-    if (friends.includes(user?._id)) {
+    if (user?._id === userGlobalData?._id) return <></>;
+    if (userGlobalData?.friends.includes(user?._id)) {
       return (
         <Button
           style={{
@@ -135,10 +145,10 @@ export default function Messenger() {
         </Button>
       );
     }
-    if (reqSent.includes(user?._id)) {
+    if (userGlobalData?.reqSent.includes(user?._id)) {
       return <Button onClick={handleCancelFriendRequest}>Cancel request</Button>;
     }
-    if (reqRecieved.includes(user?._id)) {
+    if (userGlobalData?.reqRecieved.includes(user?._id)) {
       return (
         <>
           <Button style={{ backgroundColor: 'green', color: '#fff' }}>Accept</Button>
@@ -174,15 +184,15 @@ export default function Messenger() {
    * get users that are friends with current user
    */
   const getFriendsFromUsers = (users) =>
-    friends.filter((friend) => users.some((u) => u.userID === friend));
+    userGlobalData?.friends.filter((friend) => users.some((u) => u.userID === friend));
 
   // add user to online users when connected
   useEffect(() => {
-    socket.current.emit('newUser', _id);
+    socket.current.emit('newUser', userGlobalData?._id);
     socket.current.on('getOnlineUsers', (users) => {
       setOnlineFriends(getFriendsFromUsers(users));
     });
-  }, [_id]);
+  }, [userGlobalData?._id]);
 
   return (
     <AppShell
@@ -216,14 +226,14 @@ export default function Messenger() {
             {/* Current user info */}
             <div className={classes.userInfo}>
               <Avatar
-                src={picture.pictureURL}
+                src={userGlobalData?.picture?.pictureURL}
                 size="md"
                 radius="xl"
                 style={{ marginRight: '10px' }}
               />
               <div>
                 <div>
-                  <Text size={17}>{username}</Text>
+                  <Text size={17}>{userGlobalData?.username}</Text>
                 </div>
                 <div>
                   <Text
@@ -309,7 +319,7 @@ export default function Messenger() {
             </Text>
           </div>
         ) : (
-          <Chat chat={selectedChat} socket={socket.current} />
+          <Chat chat={selectedChat} socket={socket?.current} />
         )}
       </div>
     </AppShell>

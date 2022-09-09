@@ -50,10 +50,10 @@ function SignIn() {
   const onSubmit = (user) => {
     dispatch(signin(user))
       .then(unwrapResult)
-      .then((res) => {
-        // store token in LS
-        // if (localStorage.getItem('jwt')) localStorage.removeItem('jwt');
-        localStorage.setItem('jwt', res.accessToken);
+      .then((data) => {
+        const { accessToken, refreshToken, ...others } = data;
+        localStorage.setItem('jwt', accessToken);
+        localStorage.setItem('user', JSON.stringify(others));
         navigate('/messenger');
       })
       .catch((e) => setApiError(e));

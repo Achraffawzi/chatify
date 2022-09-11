@@ -7,6 +7,7 @@ import * as yup from 'yup';
 
 import { useMutation } from '@tanstack/react-query';
 import axiosInstance from '../../axios';
+import { SIGNIN_ENDPOINT, FORGET_PASSWORD_ROUTE, SIGNUP_ROUTE } from '../../utils/constants';
 
 const validationSchema = yup.object().shape({
   email: yup.string().email().required('Email address is required'),
@@ -25,7 +26,7 @@ function Confirmation() {
     formState: { errors },
   } = methods;
 
-  const mutation = useMutation((user) => axiosInstance.post('/api/auth/login', user));
+  const mutation = useMutation((user) => axiosInstance.post(SIGNIN_ENDPOINT, user));
   const onSubmit = (user) => {
     mutation.mutate(user);
   };
@@ -55,7 +56,7 @@ function Confirmation() {
 
         <Group position="apart" my="xl">
           <Checkbox label="Remember me" name="rememberMe" {...register('rememberMe')} />
-          <Text component={Link} size="sm" color="blue" to="/auth/forget-password">
+          <Text component={Link} size="sm" color="blue" to={FORGET_PASSWORD_ROUTE}>
             Forgot password
           </Text>
         </Group>
@@ -63,7 +64,7 @@ function Confirmation() {
           Sign in
         </Button>
         <Text mt="lg" align="center" size="sm">
-          Don&apos;t have an account? <Link to="/auth/signup">Sign up</Link>
+          Don&apos;t have an account? <Link to={SIGNUP_ROUTE}>Sign up</Link>
         </Text>
       </form>
     </>

@@ -3,6 +3,7 @@ import { Avatar, Indicator, Text } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import axiosInstance from '../../axios';
+import { CHATS_ENDPOINT, USERS_ENDPOINT } from '../../utils/constants';
 
 import useStyles from './OnlineFriend.styles';
 
@@ -16,7 +17,7 @@ export const OnlineFriend = ({ onlineFriend, setSelectedChat }) => {
 
   useEffect(() => {
     const getUser = async (id) => {
-      const { data } = await axiosInstance.get(`/api/users?userID=${id}`);
+      const { data } = await axiosInstance.get(`${USERS_ENDPOINT}?userID=${id}`);
       setOnlineUser(data);
     };
     getUser(onlineFriend);
@@ -28,7 +29,7 @@ export const OnlineFriend = ({ onlineFriend, setSelectedChat }) => {
 
   useEffect(() => {
     const newChat = async () => {
-      const { data } = await axiosInstance.post('/api/chats/new', {
+      const { data } = await axiosInstance.post(`${CHATS_ENDPOINT}/new`, {
         from: userGlobalData?._id,
         to: onlineFriend,
       });
@@ -36,7 +37,9 @@ export const OnlineFriend = ({ onlineFriend, setSelectedChat }) => {
       return data;
     };
     const getChat = async () => {
-      const { data } = await axiosInstance.get(`/api/chats/${userGlobalData?._id}/${onlineFriend}`);
+      const { data } = await axiosInstance.get(
+        `${CHATS_ENDPOINT}/${userGlobalData?._id}/${onlineFriend}`
+      );
       return data;
     };
     getChat().then((res) => {

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import useStyles from './Profile.styles';
 import axiosInstance from '../../axios';
 import { logout } from '../../redux/userSlice';
+import { JWT, LOGOUT_ENDPOINT, SIGNIN_ROUTE } from '../../utils/constants';
 
 export const Profile = () => {
   const userGlobalData = useSelector((store) => store.user);
@@ -13,10 +14,10 @@ export const Profile = () => {
   const dispatch = useDispatch();
 
   const handleLogout = async () => {
-    localStorage.removeItem('jwt');
-    await axiosInstance.get('/api/auth/logout');
+    localStorage.removeItem(JWT);
+    await axiosInstance.get(LOGOUT_ENDPOINT);
     dispatch(logout());
-    navigate('/auth/signin');
+    navigate(SIGNIN_ROUTE);
   };
 
   return (

@@ -30,7 +30,7 @@ function ResetPassword() {
         Reset password
       </Text>
       <Text color="dimmed" size={14} mb="lg">
-        Your new password must be different from previous used password.
+        Your new password must be different from the old one.
       </Text>
       <PasswordField
         label="New password"

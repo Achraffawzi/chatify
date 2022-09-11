@@ -6,6 +6,7 @@ import useStyles from './Chat.styles';
 import { ChatHeader } from './ChatHeader';
 
 import axiosInstance from '../../axios';
+import { MESSAGES_ENDPOINT, USERS_ENDPOINT } from '../../utils/constants';
 
 // import "./Chat.css";
 
@@ -22,13 +23,13 @@ export const Chat = ({ chat, socket }) => {
   // get user to put it on chatHeader
   const userID = chat.users.find((u) => u !== userGlobalData?._id);
   const getUser = async () => {
-    const { data } = await axiosInstance.get(`/api/users?userID=${userID}`);
+    const { data } = await axiosInstance.get(`${USERS_ENDPOINT}?userID=${userID}`);
     setUser(data);
   };
   // get all messages of current chat
   const getMessages = async () => {
     try {
-      const res = await axiosInstance.get(`/api/messages/${chat?._id}`);
+      const res = await axiosInstance.get(`${MESSAGES_ENDPOINT}/${chat?._id}`);
       setMessages(res.data);
     } catch (error) {
       console.log(error);
@@ -64,7 +65,7 @@ export const Chat = ({ chat, socket }) => {
       text: newMessage,
     };
 
-    const { data } = await axiosInstance.post('/api/messages/new', newMsg);
+    const { data } = await axiosInstance.post(`${MESSAGES_ENDPOINT}/new`, newMsg);
     /**
      * TODO: add socket connection when sending a msg
      */

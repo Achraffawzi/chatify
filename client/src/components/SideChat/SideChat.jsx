@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { format } from 'timeago.js';
 import axiosInstance from '../../axios';
+import { USERS_ENDPOINT } from '../../utils/constants';
 import useStyles from './SideChat.styles';
 
 export const SideChat = ({ conversation, currentUserID }) => {
@@ -12,7 +13,7 @@ export const SideChat = ({ conversation, currentUserID }) => {
   const userID = users.find((item) => item !== currentUserID);
 
   const getUserById = async (userId) => {
-    const { data } = await axiosInstance.get(`/api/users?userID=${userId}`);
+    const { data } = await axiosInstance.get(`${USERS_ENDPOINT}?userID=${userId}`);
     return data;
   };
 

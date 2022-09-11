@@ -19,6 +19,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUser, cancelFriendRequest } from '../../redux/userSlice';
 import NoChatSelected from '../../assets/images/noChatSelected.svg';
+import { USERS_ENDPOINT, SIGNIN_ROUTE, JWT } from '../../utils/constants';
 
 import useStyles from './Messenger.styles';
 
@@ -30,7 +31,7 @@ export default function Messenger() {
    * check if user is not logged in => show unauthorized page
    */
 
-  if (localStorage.getItem('jwt') == null) return <Navigate to="/unauthorized" />;
+  if (localStorage.getItem(JWT) == null) return <Navigate to={SIGNIN_ROUTE} />;
 
   /**
    * Redux store states
@@ -68,7 +69,7 @@ export default function Messenger() {
   const controller = new AbortController();
   const getUserByUsername = async (searchedUserName, signal) => {
     controller.abort();
-    const { data } = await axiosInstance.get(`/api/users?username=${searchedUserName}`, {
+    const { data } = await axiosInstance.get(`${USERS_ENDPOINT}?username=${searchedUserName}`, {
       signal,
     });
     return data;
@@ -85,7 +86,9 @@ export default function Messenger() {
   /**
    * Add new friend handler
    */
-  const mutation = useMutation((payload) => axiosInstance.post('/api/users/sendRequest', payload));
+  const mutation = useMutation((payload) =>
+    axiosInstance.post(`${USERS_ENDPOINT}/sendRequest`, payload)
+  );
   const handleAddFriend = () => {
     mutation.mutate(
       { from: userGlobalData?._id, to: searchedUser._id },
@@ -103,7 +106,7 @@ export default function Messenger() {
    * cancel friend request handler
    */
   const mutation_cancelFriendRequest = useMutation((payload) =>
-    axiosInstance.post('/api/users/cancelfriendrequest', payload)
+    axiosInstance.post(`${USERS_ENDPOINT}/cancelfriendrequest`, payload)
   );
   const handleCancelFriendRequest = () => {
     mutation_cancelFriendRequest.mutate(

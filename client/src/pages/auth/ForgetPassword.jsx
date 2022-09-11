@@ -5,6 +5,8 @@ import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import * as yup from 'yup';
 
+import { SIGNIN_ENDPOINT } from '../../utils/constants';
+
 const validationSchema = yup.object({
   email: yup.string().email('Email is not valid').required('Email is required'),
 });
@@ -48,7 +50,7 @@ const ForgetPassword = () => {
         align="center"
         mt="lg"
         component={Link}
-        to="/auth/signin"
+        to={SIGNIN_ENDPOINT}
         sx={{ display: 'block' }}
       >
         Remember it, <Anchor color="blue">send me back</Anchor> to sing in screen

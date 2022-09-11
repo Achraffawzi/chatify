@@ -18,6 +18,14 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { useState, useEffect } from 'react';
 import { signin } from '../../redux/userSlice';
 
+import {
+  SIGNUP_ROUTE,
+  MESSENGER_ROUTE,
+  FORGET_PASSWORD_ROUTE,
+  JWT,
+  USER,
+} from '../../utils/constants';
+
 const validationSchema = yup.object().shape({
   email: yup.string().email().required('Email address is required'),
   password: yup.string().required('Password is required'),
@@ -36,8 +44,8 @@ function SignIn() {
    * check if user is logged in => redirect to /messenger
    */
   useEffect(() => {
-    if (localStorage.getItem('jwt')) {
-      navigate('/messenger');
+    if (localStorage.getItem(JWT)) {
+      navigate(MESSENGER_ROUTE);
     }
   }, []);
 
@@ -52,9 +60,9 @@ function SignIn() {
       .then(unwrapResult)
       .then((data) => {
         const { accessToken, refreshToken, ...others } = data;
-        localStorage.setItem('jwt', accessToken);
-        localStorage.setItem('user', JSON.stringify(others));
-        navigate('/messenger');
+        localStorage.setItem(JWT, accessToken);
+        localStorage.setItem(USER, JSON.stringify(others));
+        navigate(MESSENGER_ROUTE);
       })
       .catch((e) => setApiError(e));
   };
@@ -89,7 +97,7 @@ function SignIn() {
 
         <Group position="apart" my="xl">
           <Checkbox label="Remember me" name="rememberMe" {...register('rememberMe')} />
-          <Text component={Link} size="sm" color="blue" to="/auth/forget-password">
+          <Text component={Link} size="sm" color="blue" to={FORGET_PASSWORD_ROUTE}>
             Forgot password
           </Text>
         </Group>
@@ -97,7 +105,7 @@ function SignIn() {
           Sign in
         </Button>
         <Text mt="lg" align="center" size="sm">
-          Don&apos;t have an account? <Link to="/auth/signup">Sign up</Link>
+          Don&apos;t have an account? <Link to={SIGNUP_ROUTE}>Sign up</Link>
         </Text>
       </form>
     </>

@@ -5,6 +5,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import axiosInstance from '../../axios';
+import { CHATS_ENDPOINT } from '../../utils/constants';
 import { SideChat } from '../SideChat/SideChat';
 
 export const SideChats = ({ setSelectedChat }) => {
@@ -15,7 +16,7 @@ export const SideChats = ({ setSelectedChat }) => {
 
   // Fetching all chats of current user
   const getChatsByUser = async (userID) => {
-    const { data } = await axiosInstance.get(`/api/chats/${userID}`);
+    const { data } = await axiosInstance.get(`${CHATS_ENDPOINT}/${userID}`);
     return data;
   };
   const { data, isLoading } = useQuery(['chatsByUserId', userGlobalData?._id], () =>

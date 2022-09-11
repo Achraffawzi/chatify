@@ -17,10 +17,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Camera } from 'tabler-icons-react';
 import * as yup from 'yup';
 
-import { useMutation, QueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import axiosInstance from '../../axios';
 
 import { GoogleButton, PasswordField } from '../../components';
+import { CONFIRMATION_ROUTE, SIGNIN_ROUTE, SIGNUP_ENDPOINT } from '../../utils/constants';
 
 const validationSchema = yup.object().shape({
   picture: yup.mixed().required('Image is required'),
@@ -51,9 +52,9 @@ function SignUp() {
     setValue('picture', imgSrc);
   }
 
-  const mutation = useMutation((user) => axiosInstance.post('/api/auth/signup', user), {
+  const mutation = useMutation((user) => axiosInstance.post(SIGNUP_ENDPOINT, user), {
     onSuccess: () => {
-      navigate('/auth/confirmation');
+      navigate(CONFIRMATION_ROUTE);
     },
   });
   function onSubmit(user) {
@@ -138,7 +139,7 @@ function SignUp() {
       <GoogleButton fullWidth mt="lg" />
       <Text mt="lg" align="center" size="sm">
         Already have an account ?{' '}
-        <Box component={Link} color="blue" to="/auth/signin">
+        <Box component={Link} color="blue" to={SIGNIN_ROUTE}>
           Sign in
         </Box>
       </Text>

@@ -3,6 +3,7 @@ import { Container, Text } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import UnauthorizedSVG from '../../../assets/images/unauthorized.svg';
 import useStyles from './Unauthorized.style';
+import { SIGNIN_ROUTE } from '../../../utils/constants';
 
 export const Unauthorized = () => {
   const { classes } = useStyles();
@@ -17,7 +18,7 @@ export const Unauthorized = () => {
       <Text className={classes.text}>
         You are trying to access a private page, please sign in first!
       </Text>
-      <Link className={classes.link} to="/auth/signin">
+      <Link className={classes.link} to={SIGNIN_ROUTE}>
         Back to Login
       </Link>
     </Container>

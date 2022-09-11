@@ -10,7 +10,7 @@ export const OnlineFriend = ({ onlineFriend, setSelectedChat }) => {
   const { classes } = useStyles();
   const [onlineUser, setOnlineUser] = useState(null);
   const [chat, setChat] = useState(null);
-  const { _id } = useSelector((store) => store.user.user);
+  const userGlobalData = useSelector((store) => store.user);
 
   // get online friend's data
 
@@ -29,17 +29,14 @@ export const OnlineFriend = ({ onlineFriend, setSelectedChat }) => {
   useEffect(() => {
     const newChat = async () => {
       const { data } = await axiosInstance.post('/api/chats/new', {
-        from: _id,
+        from: userGlobalData?._id,
         to: onlineFriend,
       });
       console.log(data);
       return data;
     };
     const getChat = async () => {
-      const { data } = await axiosInstance.post('/api/chats/', {
-        userOne: _id,
-        userTwo: onlineFriend,
-      });
+      const { data } = await axiosInstance.get(`/api/chats/${userGlobalData?._id}/${onlineFriend}`);
       return data;
     };
     getChat().then((res) => {

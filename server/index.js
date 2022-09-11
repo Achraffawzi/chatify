@@ -32,12 +32,16 @@ const getUser = (userID) => {
   return onlineUsers.find((user) => user.userID === userID);
 };
 
+const removeUser = (socketID) => {
+  onlineUsers = onlineUsers.filter((user) => user.socketID !== socketID);
+};
+
 io.on("connection", (socket) => {
   console.log("new user connected! " + socket.id);
 
   // Add connected user to online users array
   socket.on("newUser", (userID) => {
-    const userAdded = addUser(userID, socket.id);
+    addUser(userID, socket.id);
     io.emit("getOnlineUsers", onlineUsers);
   });
 
@@ -55,6 +59,12 @@ io.on("connection", (socket) => {
   });
 
   // remove user once disconnected
+  socket.on("disconnect", () => {
+    console.log("a user disconnected " + socket.id);
+    removeUser(socket.id);
+    console.log(onlineUsers);
+    io.emit("getOnlineUsers", onlineUsers);
+  });
 });
 
 // Middlewares

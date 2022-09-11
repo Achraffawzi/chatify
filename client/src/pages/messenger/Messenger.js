@@ -29,7 +29,6 @@ export default function Messenger() {
   /**
    * check if user is not logged in => show unauthorized page
    */
-  // const navigate = useNavigate();
 
   if (localStorage.getItem('jwt') == null) return <Navigate to="/unauthorized" />;
 
@@ -39,14 +38,6 @@ export default function Messenger() {
   const userGlobalData = useSelector((store) => store.user);
 
   const dispatch = useDispatch();
-
-  /**
-   * check if user is logged in
-   * LOGGED IN => render the page
-   * NOT LOGGED IN => redirect to login page
-   */
-  // const navigate = useNavigate();
-  // if (_id === undefined) navigate('/auth/signin');
 
   /**
    * Mantine states
@@ -175,16 +166,17 @@ export default function Messenger() {
    */
   const socket = useRef();
   const [onlineFriends, setOnlineFriends] = useState([]);
-  // when client first connects
-  useEffect(() => {
-    socket.current = io(process.env.REACT_APP_SERVER_URI);
-  }, []);
 
   /**
    * get users that are friends with current user
    */
   const getFriendsFromUsers = (users) =>
     userGlobalData?.friends.filter((friend) => users.some((u) => u.userID === friend));
+
+  // when client first connects
+  useEffect(() => {
+    socket.current = io(process.env.REACT_APP_SERVER_URI);
+  }, []);
 
   // add user to online users when connected
   useEffect(() => {
@@ -286,7 +278,7 @@ export default function Messenger() {
 
             {/* Online Friends */}
             <div className={classes.onlineFriendsWrapper}>
-              <Text style={{ marginBottom: '15px' }}>Online friends</Text>
+              <Text style={{ marginBottom: '15px' }}>Online friends ({onlineFriends.length})</Text>
               <div className={classes.onlineFriends}>
                 {onlineFriends.map((onlineFriend) => (
                   <OnlineFriend

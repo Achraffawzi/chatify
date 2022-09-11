@@ -31,7 +31,9 @@ const getChatsByUser = async (req, res, next) => {
 // get chat of two users
 const getChatByUsers = async (req, res, next) => {
   try {
-    const { userOne, userTwo } = req.body;
+    const { userOne, userTwo } = req.params;
+    console.log(userOne);
+    console.log(userTwo);
     if (userOne == undefined || userTwo == undefined) {
       throw ApiError.BadRequest("Please provide both users ids");
     }

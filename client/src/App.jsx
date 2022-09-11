@@ -2,7 +2,7 @@ import { ColorSchemeProvider, MantineProvider } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 import {
   AuthLayout,
   ForgetPassword,
@@ -34,6 +34,7 @@ function App() {
           <MyGlobalStyle />
           <Router>
             <Routes>
+              <Route path="/" exact element={<Navigate to="/messenger" />} />
               <Route path="auth" element={<AuthLayout />}>
                 <Route path="forget-password" element={<ForgetPassword />} />
                 <Route path="signin" element={<SignIn />} />

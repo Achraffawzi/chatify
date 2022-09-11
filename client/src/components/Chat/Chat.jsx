@@ -12,7 +12,7 @@ import axiosInstance from '../../axios';
 export const Chat = ({ chat, socket }) => {
   const { classes } = useStyles();
   const scrollRef = useRef();
-  const { _id } = useSelector((store) => store.user.user);
+  const userGlobalData = useSelector((store) => store.user.user);
 
   const [messages, setMessages] = useState([]);
   const [user, setUser] = useState(null);
@@ -20,7 +20,7 @@ export const Chat = ({ chat, socket }) => {
   const [socketMessage, setSocketMessage] = useState(null);
 
   // get user to put it on chatHeader
-  const userID = chat.users.find((u) => u !== _id);
+  const userID = chat.users.find((u) => u !== userGlobalData?._id);
   const getUser = async () => {
     const { data } = await axiosInstance.get(`/api/users?userID=${userID}`);
     setUser(data);
@@ -60,7 +60,7 @@ export const Chat = ({ chat, socket }) => {
   const handleSendMessage = async () => {
     const newMsg = {
       chatID: chat?._id,
-      from: _id,
+      from: userGlobalData?._id,
       text: newMessage,
     };
 
@@ -70,7 +70,7 @@ export const Chat = ({ chat, socket }) => {
      */
     setMessages((prev) => [...prev, data]);
     socket.emit('newMessage', {
-      from: _id,
+      from: userGlobalData?._id,
       to: user._id,
       text: newMessage,
     });
@@ -85,7 +85,7 @@ export const Chat = ({ chat, socket }) => {
         <div className={classes.messagesBox}>
           {messages?.map((item) => (
             <div ref={scrollRef} key={item._id}>
-              <Message own={item.from === _id} user={user} message={item} />
+              <Message own={item.from === userGlobalData?._id} user={user} message={item} />
             </div>
           ))}
         </div>

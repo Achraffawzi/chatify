@@ -7,6 +7,6 @@ const {
 
 router.post("/new", createChat);
 router.get("/:id", getChatsByUser);
-router.post("/", getChatByUsers);
+router.get("/:userOne/:userTwo", getChatByUsers);
 
 module.exports = router;

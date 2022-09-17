@@ -46,10 +46,8 @@ io.on("connection", (socket) => {
   });
 
   // new message
-  socket.on("newMessage", ({ from, to, text }) => {
-    console.log(to, from, text);
+  socket.on("sendMessage", ({ from, to, text }) => {
     const user = getUser(to);
-    console.log(user);
     if (user) {
       io.to(user.socketID).emit("getMessage", {
         from,
@@ -62,7 +60,6 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("a user disconnected " + socket.id);
     removeUser(socket.id);
-    console.log(onlineUsers);
     io.emit("getOnlineUsers", onlineUsers);
   });
 });

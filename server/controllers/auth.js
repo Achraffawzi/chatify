@@ -120,8 +120,7 @@ const login = async (req, res, next) => {
  */
 
 const redirect = async (req, res, next) => {
-  console.log(req.user);
-  res.send("You are logged in");
+  return res.redirect(`${process.env.CLIENT_URL}/messenger`);
 };
 
 const logout = (req, res, next) => {

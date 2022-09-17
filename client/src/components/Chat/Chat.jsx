@@ -10,22 +10,43 @@ import { MESSAGES_ENDPOINT, USERS_ENDPOINT } from '../../utils/constants';
 
 // import "./Chat.css";
 
-export const Chat = ({ chat, socket }) => {
+export const Chat = ({ chat, socket, onlineFriends }) => {
   const { classes } = useStyles();
   const scrollRef = useRef();
-  const userGlobalData = useSelector((store) => store.user.user);
+  const userGlobalData = useSelector((store) => store.user);
 
   const [messages, setMessages] = useState([]);
   const [user, setUser] = useState(null);
   const [newMessage, setNewMessage] = useState('');
+  const [isOnline, setIsOnline] = useState(false);
   const [socketMessage, setSocketMessage] = useState(null);
 
   // get user to put it on chatHeader
   const userID = chat.users.find((u) => u !== userGlobalData?._id);
+
   const getUser = async () => {
     const { data } = await axiosInstance.get(`${USERS_ENDPOINT}?userID=${userID}`);
     setUser(data);
   };
+
+  // check if user is in onlineFriends
+  // to show online statue in chatHeader
+  useEffect(() => {
+    setIsOnline(onlineFriends.includes(userID));
+
+    socket.on('getMessage', ({ from, text }) => {
+      setSocketMessage({ chatID: chat._id, from, text });
+      // setMessages((prev) => [...prev, { chatID: chat._id, from, text }]);
+      console.log('socket message filled');
+    });
+
+    return () => socket.off('getMessage');
+  }, []);
+
+  useEffect(() => {
+    setMessages((prev) => [...prev, socketMessage]);
+  }, [socketMessage]);
+
   // get all messages of current chat
   const getMessages = async () => {
     try {
@@ -43,19 +64,22 @@ export const Chat = ({ chat, socket }) => {
   // scroll to bottom of the chat
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, []);
-
-  // get message from socket
-  useEffect(() => {
-    socket.on('getMessage', ({ from, text }) => {
-      setSocketMessage({ chatID: chat._id, from, text });
-      console.log('kljsf');
-    });
   }, [messages]);
 
-  useEffect(() => {
-    socketMessage && setMessages((prev) => [...prev, socketMessage]);
-  }, [socketMessage]);
+  // get message from socket
+  // useEffect(() => {
+  //   socket.on('getMessage', ({ from, text }) => {
+  //     // setSocketMessage({ chatID: chat._id, from, text });
+  //     setMessages((prev) => [...prev, { chatID: chat._id, from, text }]);
+  //     console.log('socket message filled');
+  //   });
+
+  //   return () => socket.off('getMessage');
+  // });
+
+  // useEffect(() => {
+  //   socketMessage && setMessages((prev) => [...prev, socketMessage]);
+  // }, [socketMessage]);
 
   // when user click 'Enter' to send a message
   const handleSendMessage = async () => {
@@ -66,41 +90,30 @@ export const Chat = ({ chat, socket }) => {
     };
 
     const { data } = await axiosInstance.post(`${MESSAGES_ENDPOINT}/new`, newMsg);
-    /**
-     * TODO: add socket connection when sending a msg
-     */
-    setMessages((prev) => [...prev, data]);
-    socket.emit('newMessage', {
+
+    socket.emit('sendMessage', {
       from: userGlobalData?._id,
       to: user._id,
       text: newMessage,
     });
+    setMessages((prev) => [...prev, data]);
     setNewMessage('');
   };
 
   return (
     <Paper withBorder>
       <div className={classes.mainContainer}>
-        <ChatHeader user={user} />
+        <ChatHeader user={user} isOnline={isOnline} />
 
         <div className={classes.messagesBox}>
           {messages?.map((item) => (
-            <div ref={scrollRef} key={item._id}>
-              <Message own={item.from === userGlobalData?._id} user={user} message={item} />
+            <div ref={scrollRef} key={item?._id}>
+              <Message own={item?.from === userGlobalData?._id} user={user} message={item} />
             </div>
           ))}
         </div>
 
         <div className={classes.inputBox}>
-          {/* <Textarea
-            placeholder="Enter your message"
-            size="sm"
-            style={{
-              flex: 1,
-              marginRight: "7px",
-            }}
-            onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-          /> */}
           <TextInput
             placeholder="Enter your message..."
             style={{
@@ -111,7 +124,6 @@ export const Chat = ({ chat, socket }) => {
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
           />
-          {/* <Button>Send</Button> */}
         </div>
       </div>
     </Paper>

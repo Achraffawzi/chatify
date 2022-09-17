@@ -4,7 +4,7 @@ import { format } from 'timeago.js';
 
 import useStyles from './ChatHeader.styles';
 
-export const ChatHeader = ({ user }) => {
+export const ChatHeader = ({ user, isOnline }) => {
   const theme = useMantineTheme();
   const { classes } = useStyles();
   return (
@@ -22,7 +22,7 @@ export const ChatHeader = ({ user }) => {
           <Text size={17}>{user?.username}</Text>
         </div>
         <div className="chatHeader__userInfo__status">
-          <Text size={11}>Last online {format(user?.lastOnline)}</Text>
+          <Text size={11}>{isOnline ? 'Online' : `Last online ${format(user?.lastOnline)}`}</Text>
         </div>
       </div>
     </div>

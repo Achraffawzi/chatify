@@ -8,3 +8,4 @@ export * from './Message';
 export * from './OnlineFriend';
 export * from './SideChat';
 export * from './SideChats';
+export * from './ChangePassword';

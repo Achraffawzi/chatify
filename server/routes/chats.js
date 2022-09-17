@@ -4,9 +4,10 @@ const {
   getChatsByUser,
   getChatByUsers,
 } = require("../controllers/chats");
+const isAuth = require("../middlewares/isAuth");
 
-router.post("/new", createChat);
-router.get("/:id", getChatsByUser);
-router.get("/:userOne/:userTwo", getChatByUsers);
+router.post("/new", isAuth, createChat);
+router.get("/:id", isAuth, getChatsByUser);
+router.get("/:userOne/:userTwo", isAuth, getChatByUsers);
 
 module.exports = router;

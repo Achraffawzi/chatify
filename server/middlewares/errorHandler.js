@@ -1,7 +1,7 @@
 const ApiError = require("../classes/ApiErrors.js");
 const mongoose = require("mongoose");
 const multer = require("multer");
-// const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 
 const handleApiError = (e, req, res, next) => {
   console.log(e);
@@ -17,11 +17,17 @@ const handleApiError = (e, req, res, next) => {
     });
   }
 
-  //   if (e instanceof jwt.TokenExpiredError) {
-  //     return res.status(401).json({
-  //       message: "Your session might be expired, please login again",
-  //     });
-  //   }
+  if (e instanceof jwt.TokenExpiredError) {
+    return res.status(401).json({
+      message: "Your session might be expired, please login again",
+    });
+  }
+
+  if (e instanceof jwt.JsonWebTokenError) {
+    return res.status(401).json({
+      message: "You don't have access!",
+    });
+  }
 
   if (e instanceof multer.MulterError) {
     return res.status(400).json({

@@ -187,6 +187,8 @@ export default function Messenger() {
     socket.current.on('getOnlineUsers', (users) => {
       setOnlineFriends(getFriendsFromUsers(users));
     });
+
+    return () => socket.current.off('getOnlineUsers');
   }, [userGlobalData?._id]);
 
   return (
@@ -314,7 +316,7 @@ export default function Messenger() {
             </Text>
           </div>
         ) : (
-          <Chat chat={selectedChat} socket={socket?.current} />
+          <Chat onlineFriends={onlineFriends} chat={selectedChat} socket={socket?.current} />
         )}
       </div>
     </AppShell>
